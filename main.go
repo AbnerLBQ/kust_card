@@ -14,11 +14,12 @@ func main() {
 	if err != nil {
 		panic("error")
 	}
-	username := "15197903439"
-
+	//username := "15*****39"
+	username := os.Getenv("username")
 	password := os.Getenv("password")
-
+	// password := "1****6"
 	tencent_key := os.Getenv("tencent_key")
+	// 	tencent_key := "I52BZ*****SFAH"
 	// dataBytes, err := os.ReadFile("config.yaml")
 	// if err != nil {
 	// 	fmt.Println("读取文件失败", err)
@@ -47,6 +48,7 @@ func main() {
 	if jws != "" {
 		fmt.Println(jws)
 	}
+	fmt.Println("打卡开始")
 	headers := map[string]string{
 		"Host":             "gw.wozaixiaoyuan.com",
 		"Connection":       "keep-alive",
@@ -63,6 +65,7 @@ func main() {
 		"Accept-Encoding":  "gzip, deflate",
 		"Accept-Language":  "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
 	}
+	//fmt.Println("打开开始2")
 	// signId, id, dataJson, err := GetMySignLogs(headers)
 	// if err != nil {
 	// 	fmt.Println("Error:", err)
@@ -76,7 +79,7 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
-
+	//fmt.Println("打开开始3")
 	if signID == "" && id == "" && dataJson == nil {
 		fmt.Println("用户已打过卡或无可用数据")
 		return

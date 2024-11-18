@@ -1,6 +1,7 @@
 package server
 
 import (
+	"compress/gzip"
 	"dailylife/conf"
 	"encoding/json"
 	"fmt"
@@ -15,7 +16,7 @@ func GetMySignLogs(headers map[string]string) (string, string, map[string]interf
 	if err != nil {
 		return "", "", nil, err
 	}
-
+	fmt.Println("打卡开始4")
 	// 添加请求头
 	for key, value := range headers {
 		req.Header.Add(key, value)
@@ -34,18 +35,46 @@ func GetMySignLogs(headers map[string]string) (string, string, map[string]interf
 	}
 	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", "", nil, err
-	}
+	// body, err := io.ReadAll(resp.Body)
+	// if err != nil {
+	// 	return "", "", nil, err
+	// }
 
 	// 解析 JSON 响应
 	var response conf.ResponseData
-	err = json.Unmarshal(body, &response)
-	if err != nil {
-		return "", "", nil, err
-	}
 
+	if resp.Header.Get("Content-Encoding") == "gzip" {
+		reader, err := gzip.NewReader(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		defer reader.Close()
+		// Read the decompressed response body
+		body, err := io.ReadAll(reader)
+		if err != nil {
+			panic(err)
+		}
+		// Do something with the response body
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return "", "", nil, err
+		}
+	} else {
+		// The response is not gzip encoded, so read it directly
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			panic(err)
+		}
+		// Do something with the response body
+		err = json.Unmarshal(body, &response)
+		if err != nil {
+			return "", "", nil, err
+		}
+	}
+	//fmt.Println(body)
+	//fmt.Println("打卡开始5")
+
+	//fmt.Println("打卡开始6")
 	if len(response.Data) == 0 {
 		return "", "", nil, fmt.Errorf("no sign data found")
 	}
