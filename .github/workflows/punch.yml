@@ -32,7 +32,7 @@ jobs:
       
   User02:
     runs-on: ubuntu-latest
-    environment: CONFIG_01
+    environment: CONFIG_02
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
